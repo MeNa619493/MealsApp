@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_home_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.mealsapp.ui.home.home.view.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_detailsFragment"
+            app:popUpTo="@id/homeFragment"
+            app:destination="@id/detailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/favouritesFragment"
+        android:name="com.example.mealsapp.ui.home.favourites.view.FavouritesFragment"
+        android:label="Favourites"
+        tools:layout="@layout/fragment_favourites" >
+        <action
+            android:id="@+id/action_favouritesFragment_to_detailsFragment"
+            app:popUpTo="@id/favouritesFragment"
+            app:destination="@id/detailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.mealsapp.ui.home.search.view.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_searchByIngredientsFragment"
+            app:destination="@id/searchByIngredientsFragment"
+            app:popUpTo="@id/searchFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_searchFragment_to_searchByTypeFragment"
+            app:destination="@id/searchByTypeFragment"
+            app:popUpTo="@id/searchFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.example.mealsapp.ui.home.details.view.DetailsFragment"
+        android:label="fragment_details"
+        tools:layout="@layout/fragment_details" >
+        <argument
+            android:name="meal"
+            app:argType="com.example.mealsapp.model.pojo.meal.Meal" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchByIngredientsFragment"
+        android:name="com.example.mealsapp.ui.home.searchbyingredients.view.SearchByIngredientsFragment"
+        android:label="fragment_search_by_ingredients"
+        tools:layout="@layout/fragment_search_by_ingredients" >
+        <action
+            android:id="@+id/action_searchByIngredientsFragment_to_searchByTypeFragment"
+            app:destination="@id/searchByTypeFragment"
+            app:popUpTo="@id/searchByIngredientsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/searchByTypeFragment"
+        android:name="com.example.mealsapp.ui.home.searchbytype.view.SearchByTypeFragment"
+        android:label="fragment_search_by_type"
+        tools:layout="@layout/fragment_search_by_type" >
+        <argument
+            android:name="type"
+            app:argType="string" />
+        <argument
+            android:name="searchName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_searchByTypeFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment"
+            app:popUpTo="@id/searchByTypeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+</navigation>
