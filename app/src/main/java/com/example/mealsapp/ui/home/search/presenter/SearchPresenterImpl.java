@@ -1,15 +1,20 @@
 package com.example.mealsapp.ui.home.search.presenter;
 
 import com.example.mealsapp.Repo.Repo;
+import com.example.mealsapp.model.pojo.category.Category;
 import com.example.mealsapp.model.pojo.category.CategoryResponse;
+import com.example.mealsapp.model.pojo.country.Country;
 import com.example.mealsapp.model.pojo.country.CountryResponse;
+import com.example.mealsapp.model.pojo.ingredient.Ingredient;
 import com.example.mealsapp.model.pojo.ingredient.IngredientResponse;
 import com.example.mealsapp.model.pojo.meal.Meal;
 import com.example.mealsapp.model.pojo.meal.MealResponse;
-import com.example.mealsapp.ui.home.home.view.HomeView;
 import com.example.mealsapp.ui.home.search.view.SearchView;
+import com.example.mealsapp.utils.Helper;
 
+import java.util.List;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -20,6 +25,9 @@ public class SearchPresenterImpl implements SearchPresenter{
     private SearchView view;
     private Repo repo;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private List<Category> categoryList;
+    private List<Country> countryList;
+    private List<Ingredient> ingredientList;
 
     public SearchPresenterImpl(SearchView view, Repo repo) {
         this.view = view;
@@ -28,7 +36,48 @@ public class SearchPresenterImpl implements SearchPresenter{
 
     @Override
     public void searchByName(String name) {
+        if (name.length() != 0) {
+            Single<MealResponse> apiDataSingle = repo.searchByName(name).subscribeOn(Schedulers.io());
+            Single<List<Meal>> roomDataSingle = repo.getFavouriteMeals().subscribeOn(Schedulers.io());
 
+            Single<List<Meal>> combinedDataSingle = Single.zip(apiDataSingle, roomDataSingle,
+                    (apiDataList, roomDataList) -> {
+                        List<Meal> apiList = apiDataList.getMeals();
+
+                        // Compare and find similar objects between the two lists
+                        for (Meal apiData : apiList) {
+                            for (Meal roomData : roomDataList) {
+                                if (apiData.getIdMeal().equals(roomData.getIdMeal())) { // Replace with your similarity check logic
+                                    apiData.setFavorite(true); // Change the flag in the similar object
+                                }
+                            }
+                        }
+
+                        return apiList; // Return the modified API data list
+                    }
+            ).subscribeOn(Schedulers.io());
+
+            combinedDataSingle.observeOn(AndroidSchedulers.mainThread()).subscribe(new SingleObserver<List<Meal>>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+                    compositeDisposable.add(d);
+                }
+
+                @Override
+                public void onSuccess(List<Meal> meals) {
+                    view.showSearchResultSuccess(meals);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    view.showError(e);
+                }
+            });
+        } else {
+            getCategories();
+            getCountries();
+            getIngredients();
+        }
     }
 
     @Override
@@ -42,7 +91,8 @@ public class SearchPresenterImpl implements SearchPresenter{
 
                     @Override
                     public void onSuccess(CategoryResponse categoryResponse) {
-                        view.showCategories(categoryResponse);
+                        categoryList = categoryResponse.getMeals();
+                        view.showCategories(categoryList);
                     }
 
                     @Override
@@ -63,7 +113,8 @@ public class SearchPresenterImpl implements SearchPresenter{
 
                     @Override
                     public void onSuccess(CountryResponse countryResponse) {
-                        view.showCountries(countryResponse);
+                        countryList = countryResponse.getMeals();
+                        view.showCountries(countryList);
                     }
 
                     @Override
@@ -84,7 +135,8 @@ public class SearchPresenterImpl implements SearchPresenter{
 
                     @Override
                     public void onSuccess(IngredientResponse ingredientResponse) {
-                        view.showIngredients(ingredientResponse);
+                        ingredientList = ingredientResponse.getMeals();
+                        view.showIngredients(ingredientList);
                     }
 
                     @Override

@@ -136,7 +136,9 @@ public class SearchByIngredientsFragment extends Fragment implements SearchByIng
     @Override
     public void onDestroy() {
         super.onDestroy();
-        disposable.dispose();
+        if (disposable != null) {
+            disposable.dispose();
+        }
         binding = null;
         searchByIngredientsPresenter.onDestroy();
     }

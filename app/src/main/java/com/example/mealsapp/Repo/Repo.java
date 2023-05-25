@@ -62,6 +62,10 @@ public class Repo {
         return remoteDataSource.searchByIngredient(ingredientName);
     }
 
+    public Single<MealResponse> searchByName(String name) {
+        return remoteDataSource.searchByName(name);
+    }
+
     public Completable addFavorite(Meal meal) {
         return localDataSource.insertMeal(meal);
     }

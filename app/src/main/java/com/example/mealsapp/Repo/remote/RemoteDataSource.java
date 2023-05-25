@@ -23,4 +23,6 @@ public interface RemoteDataSource {
     Single<MealResponse> searchByCountry(String countryName);
 
     Single<MealResponse> searchByIngredient(String ingredientName);
+
+    public Single<MealResponse> searchByName(String name);
 }

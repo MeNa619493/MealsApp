@@ -200,7 +200,9 @@ public class SearchByTypeFragment extends Fragment implements SearchByTypeView {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        disposable.dispose();
+        if (disposable != null) {
+            disposable.dispose();
+        }
         binding = null;
         searchByTypePresenter.onDestroy();
     }

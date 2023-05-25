@@ -72,4 +72,8 @@ public class ApiClient implements RemoteDataSource {
     public Single<MealResponse> searchByIngredient(String ingredientName) {
         return retrofit.searchByIngredient(ingredientName);
     }
+
+    public Single<MealResponse> searchByName(String name) {
+        return retrofit.searchByName(name);
+    }
 }
