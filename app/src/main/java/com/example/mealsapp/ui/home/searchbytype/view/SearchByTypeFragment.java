@@ -1,9 +1,12 @@
 package com.example.mealsapp.ui.home.searchbytype.view;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -22,10 +25,12 @@ import com.example.mealsapp.MealsApplication;
 import com.example.mealsapp.R;
 import com.example.mealsapp.databinding.FragmentSearchByTypeBinding;
 import com.example.mealsapp.model.pojo.meal.Meal;
+import com.example.mealsapp.ui.home.HomeActivity;
 import com.example.mealsapp.ui.home.searchbytype.view.SearchByTypeFragmentDirections.ActionSearchByTypeFragmentToDetailsFragment;
 import com.example.mealsapp.ui.home.searchbytype.presenter.SearchByTypePresenter;
 import com.example.mealsapp.ui.home.searchbytype.presenter.SearchByTypePresenterImpl;
-import com.example.mealsapp.utils.Helper;
+import com.example.mealsapp.utils.NetworkChangeReceiver;
+import com.example.mealsapp.utils.ProgressDialogHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
@@ -69,9 +74,24 @@ public class SearchByTypeFragment extends Fragment implements SearchByTypeView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getData();
         observeCancelButton();
         observeSearchView();
+
+        ProgressDialogHelper.showProgress(getContext());
+        NetworkChangeReceiver.getIsConnected().observe(getViewLifecycleOwner(), isConnected -> {
+            handleNoConnection(isConnected);
+        });
+    }
+
+    private void handleNoConnection(boolean isVisible) {
+        if (isVisible) {
+            binding.rvMeals.setVisibility(View.VISIBLE);
+            binding.ivNoInternet.setVisibility(View.GONE);
+            getData();
+        } else {
+            binding.rvMeals.setVisibility(View.GONE);
+            binding.ivNoInternet.setVisibility(View.VISIBLE);
+        }
     }
 
     private void observeCancelButton() {
@@ -106,7 +126,6 @@ public class SearchByTypeFragment extends Fragment implements SearchByTypeView {
     private void getData() {
         String type = SearchByTypeFragmentArgs.fromBundle(getArguments()).getType();
         String searchField = SearchByTypeFragmentArgs.fromBundle(getArguments()).getSearchName();
-        Helper.showProgress(getContext());
         if (type.equalsIgnoreCase("c")) {
             searchByTypePresenter.getMealsByCategory(searchField);
         } else if (type.equalsIgnoreCase("a")) {
@@ -118,7 +137,7 @@ public class SearchByTypeFragment extends Fragment implements SearchByTypeView {
 
     @Override
     public void showMeals(List<Meal> meals) {
-        Helper.hideProgress(getContext());
+        ProgressDialogHelper.hideProgress(getContext());
         this.meals = meals;
         Log.i(TAG, "showMeals: " + meals.size());
         binding.rvMeals.setHasFixedSize(true);
@@ -137,14 +156,18 @@ public class SearchByTypeFragment extends Fragment implements SearchByTypeView {
 
             @Override
             public void OnFavouriteClick(Meal meal) {
-                if (meal.isFavorite()) {
-                    meal.setFavorite(false);
-                    Log.i(TAG, "onClick: remove from favorite");
-                    searchByTypePresenter.deleteMeal(meal);
+                if (searchByTypePresenter.getIsLoggedInFlag()) {
+                    if (meal.isFavorite()) {
+                        meal.setFavorite(false);
+                        Log.i(TAG, "onClick: remove from favorite");
+                        searchByTypePresenter.deleteMeal(meal);
+                    } else {
+                        meal.setFavorite(true);
+                        Log.i(TAG, "onClick: add to favorite");
+                        searchByTypePresenter.addFavorite(meal);
+                    }
                 } else {
-                    meal.setFavorite(true);
-                    Log.i(TAG, "onClick: add to favorite");
-                    searchByTypePresenter.addFavorite(meal);
+                    showAlertDialog();
                 }
             }
         });
@@ -159,7 +182,7 @@ public class SearchByTypeFragment extends Fragment implements SearchByTypeView {
 
     @Override
     public void showError(Throwable throwable) {
-        Helper.hideProgress(getContext());
+        ProgressDialogHelper.hideProgress(getContext());
         Toast.makeText(binding.getRoot().getContext(),
                 "Error getting meals",
                 Toast.LENGTH_SHORT).show();
@@ -172,6 +195,26 @@ public class SearchByTypeFragment extends Fragment implements SearchByTypeView {
         Toast.makeText(binding.getRoot().getContext(),
                 "Meal Saved Successfully",
                 Toast.LENGTH_SHORT).show();
+    }
+
+    private void showAlertDialog() {
+        new AlertDialog.Builder(requireContext()).setTitle("Sign In Required")
+                .setMessage("You must sign in to access this feature.")
+                .setIcon(R.drawable.login)
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent = new Intent(requireContext(), HomeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getActivity().startActivity(intent);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                }).create()
+                .show();
     }
 
     @Override

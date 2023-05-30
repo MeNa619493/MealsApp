@@ -23,8 +23,18 @@
         <item name="android:background">@drawable/bg_edit_text</item>
     </style>
 
-    <style name="loginButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="backgroundTint">#006DDB</item>
+    <style name="DialogStyle" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="circleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 
 </resources>

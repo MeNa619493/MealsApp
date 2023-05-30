@@ -10,9 +10,9 @@ import com.example.mealsapp.model.pojo.ingredient.IngredientResponse;
 import com.example.mealsapp.model.pojo.meal.Meal;
 import com.example.mealsapp.model.pojo.meal.MealResponse;
 import com.example.mealsapp.ui.home.search.view.SearchView;
-import com.example.mealsapp.utils.Helper;
 
 import java.util.List;
+
 import io.reactivex.CompletableObserver;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
@@ -21,7 +21,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class SearchPresenterImpl implements SearchPresenter{
+public class SearchPresenterImpl implements SearchPresenter {
     private SearchView view;
     private Repo repo;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -188,9 +188,13 @@ public class SearchPresenterImpl implements SearchPresenter{
                 });
     }
 
+    public boolean getIsLoggedInFlag() {
+        return repo.getIsLoggedInFlag();
+    }
+
     @Override
     public void onDestroy() {
-        if(!compositeDisposable.isDisposed()){
+        if (!compositeDisposable.isDisposed()) {
             compositeDisposable.dispose();
         }
     }

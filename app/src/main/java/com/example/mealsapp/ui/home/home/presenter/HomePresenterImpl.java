@@ -16,7 +16,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class HomePresenterImpl implements HomePresenter{
+public class HomePresenterImpl implements HomePresenter {
     private HomeView view;
     private Repo repo;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -130,6 +130,10 @@ public class HomePresenterImpl implements HomePresenter{
                         view.mealDeletedFailure();
                     }
                 });
+    }
+
+    public boolean getIsLoggedInFlag() {
+        return repo.getIsLoggedInFlag();
     }
 
     @Override

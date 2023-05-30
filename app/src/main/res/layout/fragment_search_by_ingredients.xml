@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ededed"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.home.searchbyingredients.view.SearchByIngredientsFragment">
 
@@ -49,5 +50,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:id="@+id/iv_no_internet"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_search"
+        android:src="@drawable/no_internet_access" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

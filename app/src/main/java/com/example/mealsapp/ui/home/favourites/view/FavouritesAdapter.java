@@ -13,9 +13,6 @@ import com.example.mealsapp.R;
 import com.example.mealsapp.databinding.ItemMealBinding;
 import com.example.mealsapp.model.pojo.meal.Meal;
 
-import java.util.List;
-import java.util.Objects;
-
 public class FavouritesAdapter extends ListAdapter<Meal, FavouritesAdapter.ViewHolder> {
     private Context context;
     private OnMealClickListener clickListener;

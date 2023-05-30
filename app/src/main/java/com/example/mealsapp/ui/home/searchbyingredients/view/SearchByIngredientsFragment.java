@@ -1,6 +1,7 @@
 package com.example.mealsapp.ui.home.searchbyingredients.view;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -8,12 +9,14 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
+
 import com.example.mealsapp.MealsApplication;
 import com.example.mealsapp.R;
 import com.example.mealsapp.databinding.FragmentSearchByIngredientsBinding;
@@ -22,9 +25,12 @@ import com.example.mealsapp.model.pojo.ingredient.IngredientResponse;
 import com.example.mealsapp.ui.home.searchbyingredients.presenter.SearchByIngredientsPresenter;
 import com.example.mealsapp.ui.home.searchbyingredients.presenter.SearchByIngredientsPresenterImpl;
 import com.example.mealsapp.ui.home.searchbyingredients.view.SearchByIngredientsFragmentDirections.ActionSearchByIngredientsFragmentToSearchByTypeFragment;
-import com.example.mealsapp.utils.Helper;
+import com.example.mealsapp.utils.NetworkChangeReceiver;
+import com.example.mealsapp.utils.ProgressDialogHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -64,10 +70,25 @@ public class SearchByIngredientsFragment extends Fragment implements SearchByIng
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Helper.showProgress(getContext());
-        searchByIngredientsPresenter.getIngredients();
         observeSearchView();
         observeCancelButton();
+
+        ProgressDialogHelper.showProgress(getContext());
+        NetworkChangeReceiver.getIsConnected().observe(getViewLifecycleOwner(), isConnected -> {
+            handleNoConnection(isConnected);
+        });
+    }
+
+    private void handleNoConnection(boolean isVisible) {
+        if (isVisible) {
+            binding.rvIngredients.setVisibility(View.VISIBLE);
+            binding.ivNoInternet.setVisibility(View.GONE);
+            searchByIngredientsPresenter.getIngredients();
+        } else {
+            ProgressDialogHelper.hideProgress(getContext());
+            binding.rvIngredients.setVisibility(View.GONE);
+            binding.ivNoInternet.setVisibility(View.VISIBLE);
+        }
     }
 
     private void observeCancelButton() {
@@ -101,12 +122,12 @@ public class SearchByIngredientsFragment extends Fragment implements SearchByIng
 
     @Override
     public void showIngredients(IngredientResponse ingredientResponse) {
-        Helper.hideProgress(getContext());
+        ProgressDialogHelper.hideProgress(getContext());
         Log.i(TAG, "showIngredients: " + ingredientResponse.getMeals().size());
         binding.rvIngredients.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         binding.rvIngredients.setLayoutManager(layoutManager);
-        adapter = new SearchByIngredientsAdapter(new SearchByIngredientsAdapter.OnIngredientClickListener() {
+        adapter = new SearchByIngredientsAdapter(getContext(), new SearchByIngredientsAdapter.OnIngredientClickListener() {
             @Override
             public void onIngredientClick(Ingredient ingredient) {
                 Log.i(TAG, "showIngredients: item clicked");
@@ -127,7 +148,7 @@ public class SearchByIngredientsFragment extends Fragment implements SearchByIng
 
     @Override
     public void showError(Throwable throwable) {
-        Helper.hideProgress(getContext());
+        ProgressDialogHelper.hideProgress(getContext());
         Toast.makeText(binding.getRoot().getContext(),
                 "Error getting search Result",
                 Toast.LENGTH_SHORT).show();

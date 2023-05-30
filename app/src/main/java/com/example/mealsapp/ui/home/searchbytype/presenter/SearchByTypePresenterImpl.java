@@ -153,6 +153,10 @@ public class SearchByTypePresenterImpl implements SearchByTypePresenter {
                 });
     }
 
+    public boolean getIsLoggedInFlag() {
+        return repo.getIsLoggedInFlag();
+    }
+
     @Override
     public void onDestroy() {
         if (!compositeDisposable.isDisposed()) {

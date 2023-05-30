@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cv_meal"
     app:cardCornerRadius="20dp"
-    android:layout_marginStart="10dp"
+    android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="8dp"
     android:layout_gravity="center_horizontal"
     android:layout_width="wrap_content"
@@ -66,7 +66,6 @@
             app:layout_constraintEnd_toEndOf="@+id/view"
             app:layout_constraintStart_toStartOf="@+id/view"
             app:layout_constraintTop_toTopOf="@+id/view"
-            android:backgroundTint="@color/white"
             android:background="@drawable/save_background"  />
 
         <View
@@ -104,3 +103,4 @@
             tools:text="Chicken" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
+

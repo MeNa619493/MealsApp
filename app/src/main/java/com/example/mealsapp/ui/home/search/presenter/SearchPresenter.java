@@ -9,5 +9,6 @@ public interface SearchPresenter {
     void getIngredients();
     void addFavorite(Meal meal);
     void deleteMeal(Meal meal);
+    boolean getIsLoggedInFlag();
     void onDestroy();
 }

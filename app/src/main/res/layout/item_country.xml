@@ -9,14 +9,16 @@
     android:layout_marginVertical="8dp"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/iv_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:background="@color/white"
+        android:scaleType="fitXY"
         tools:src="@drawable/logo"
-        android:backgroundTint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/circleImageView" />
 
     <TextView
         android:id="@+id/tv_name"

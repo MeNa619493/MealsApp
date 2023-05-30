@@ -13,6 +13,9 @@ public interface ApiService {
     @GET("random.php")
     Single<MealResponse> getRandomMeal();
 
+    @GET("lookup.php")
+    Single<MealResponse> getMealById(@Query("i") String id);
+
     @GET("search.php")
     Single<MealResponse> searchByName(@Query("s") String mealName);
 

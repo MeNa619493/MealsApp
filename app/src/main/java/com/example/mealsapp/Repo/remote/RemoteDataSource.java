@@ -10,6 +10,8 @@ import io.reactivex.Single;
 public interface RemoteDataSource {
     Single<MealResponse> getRandomMeal();
 
+    Single<MealResponse> getMealById(String id);
+
     Single<MealResponse> getYouMightLikeMeal(char c);
 
     Single<CategoryResponse> getCategories();
@@ -24,5 +26,5 @@ public interface RemoteDataSource {
 
     Single<MealResponse> searchByIngredient(String ingredientName);
 
-    public Single<MealResponse> searchByName(String name);
+    Single<MealResponse> searchByName(String name);
 }

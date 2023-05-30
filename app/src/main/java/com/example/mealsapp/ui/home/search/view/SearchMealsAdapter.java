@@ -21,7 +21,7 @@ public class SearchMealsAdapter extends ListAdapter<Meal, SearchMealsAdapter.Vie
     private Context context;
     private OnMealClickListener clickListener;
 
-    public SearchMealsAdapter(Context context , OnMealClickListener clickListener) {
+    public SearchMealsAdapter(Context context, OnMealClickListener clickListener) {
         super(new DiffUtil.ItemCallback<Meal>() {
             @Override
             public boolean areItemsTheSame(@NonNull Meal oldItem, @NonNull Meal newItem) {
@@ -41,38 +41,12 @@ public class SearchMealsAdapter extends ListAdapter<Meal, SearchMealsAdapter.Vie
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(ItemMealBinding.inflate(LayoutInflater.from(parent.getContext()),
-                parent, false));
+        return ViewHolder.from(parent);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.binding.tvMealName.setText(getItem(position).getStrMeal());
-        holder.binding.tvCategory.setText(getItem(position).getStrCategory());
-        Glide.with(holder.binding.getRoot())
-                .load(getItem(position).getStrMealThumb())
-                .placeholder(R.drawable.placeholder)
-                .into(holder.binding.ivMeal);
-
-        if (getItem(position).isFavorite()){
-            holder.binding.ivSaveMeal.setImageDrawable(context.getResources().getDrawable(R.drawable.bookmark_filled));
-        } else {
-            holder.binding.ivSaveMeal.setImageDrawable(context.getResources().getDrawable(R.drawable.bookmark));
-        }
-
-        holder.binding.cvMeal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickListener.onMealClick(getItem(position));
-            }
-        });
-
-        holder.binding.ivSaveMeal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickListener.OnFavouriteClick(getItem(position));
-            }
-        });
+        holder.bind(getItem(position), clickListener, context);
     }
 
     @Override
@@ -82,6 +56,7 @@ public class SearchMealsAdapter extends ListAdapter<Meal, SearchMealsAdapter.Vie
 
     public interface OnMealClickListener {
         void onMealClick(Meal meal);
+
         void OnFavouriteClick(Meal meal);
     }
 
@@ -91,6 +66,41 @@ public class SearchMealsAdapter extends ListAdapter<Meal, SearchMealsAdapter.Vie
         public ViewHolder(ItemMealBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+        }
+
+        public void bind(Meal meal, OnMealClickListener clickListener, Context context) {
+            binding.tvMealName.setText(meal.getStrMeal());
+            binding.tvCategory.setText(meal.getStrCategory());
+            Glide.with(binding.getRoot())
+                    .load(meal.getStrMealThumb())
+                    .placeholder(R.drawable.placeholder)
+                    .into(binding.ivMeal);
+
+            if (meal.isFavorite()) {
+                binding.ivSaveMeal.setImageDrawable(context.getResources().getDrawable(R.drawable.bookmark_filled));
+            } else {
+                binding.ivSaveMeal.setImageDrawable(context.getResources().getDrawable(R.drawable.bookmark));
+            }
+
+            binding.cvMeal.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickListener.onMealClick(meal);
+                }
+            });
+
+            binding.ivSaveMeal.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickListener.OnFavouriteClick(meal);
+                }
+            });
+        }
+
+        public static ViewHolder from(ViewGroup parent) {
+            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+            ItemMealBinding binding = ItemMealBinding.inflate(layoutInflater, parent, false);
+            return new ViewHolder(binding);
         }
     }
 }

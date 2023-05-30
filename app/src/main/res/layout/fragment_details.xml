@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ededed"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.home.details.view.DetailsFragment">
 
@@ -34,13 +35,12 @@
 
         <ImageView
             android:id="@+id/iv_save_meal"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             app:layout_constraintBottom_toBottomOf="@+id/view"
             app:layout_constraintEnd_toEndOf="@+id/view"
             app:layout_constraintStart_toStartOf="@+id/view"
             app:layout_constraintTop_toTopOf="@+id/view"
-            android:backgroundTint="@color/white"
             android:background="@drawable/save_background" />
 
         <View
@@ -56,14 +56,36 @@
 
         <ImageView
             android:id="@+id/iv_share_meal"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             app:layout_constraintBottom_toBottomOf="@+id/view1"
             app:layout_constraintEnd_toEndOf="@+id/view1"
             app:layout_constraintStart_toStartOf="@+id/view1"
             app:layout_constraintTop_toTopOf="@+id/view1"
             android:backgroundTint="@color/white"
             android:background="@drawable/ic_share" />
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/save_icon_background"
+            android:backgroundTint="#30000000"
+            app:layout_constraintEnd_toStartOf="@+id/view1"
+            app:layout_constraintTop_toTopOf="@+id/view1"
+            app:layout_constraintBottom_toBottomOf="@+id/view1"/>
+
+        <ImageView
+            android:id="@+id/iv_add_plan_meal"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/view3"
+            app:layout_constraintEnd_toEndOf="@+id/view3"
+            app:layout_constraintStart_toStartOf="@+id/view3"
+            app:layout_constraintTop_toTopOf="@+id/view3"
+            android:backgroundTint="@color/white"
+            android:background="@drawable/ic_calendar" />
 
         <View
             android:id="@+id/view2"
@@ -78,8 +100,8 @@
 
         <ImageView
             android:id="@+id/iv_back"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             app:layout_constraintBottom_toBottomOf="@+id/view2"
             app:layout_constraintEnd_toEndOf="@+id/view2"
             app:layout_constraintStart_toStartOf="@+id/view2"
@@ -137,7 +159,6 @@
 
         <TextView
             android:id="@+id/tv_instructions"
-            android:inputType="textMultiLine"
             android:gravity="top|start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -167,9 +188,78 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_instructions"/>
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:elevation="8dp"
+            app:cardCornerRadius="15dp"
+            android:layout_marginHorizontal="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_meal_instructions">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_meal_area"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="3dp"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Egypt"
+                    android:textColor="@color/black"
+                    android:textSize="17sp"/>
+
+                <TextView
+                    android:id="@+id/tv_area"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:layout_marginTop="8dp"
+                    android:elevation="3dp"
+                    android:text="Area"
+                    android:textAllCaps="true"
+                    android:textSize="15sp"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tv_ingredients"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="Ingredients:"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cv_area" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_ingredients"
+            android:layout_width="0dp"
+            android:layout_height="145dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_ingredients"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <TextView
             android:id="@+id/tv_video"
-            android:inputType="textMultiLine"
             android:gravity="top|start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -182,7 +272,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_meal_instructions"/>
+            app:layout_constraintTop_toBottomOf="@+id/rv_ingredients"/>
 
         <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
             android:id="@+id/ep_video_view"

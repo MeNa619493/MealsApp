@@ -1,10 +1,12 @@
 package com.example.mealsapp.ui.home.search.view;
 
-import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
@@ -19,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.example.mealsapp.MealsApplication;
@@ -28,14 +31,17 @@ import com.example.mealsapp.model.pojo.category.Category;
 import com.example.mealsapp.model.pojo.country.Country;
 import com.example.mealsapp.model.pojo.ingredient.Ingredient;
 import com.example.mealsapp.model.pojo.meal.Meal;
+import com.example.mealsapp.ui.home.HomeActivity;
 import com.example.mealsapp.ui.home.search.presenter.SearchPresenter;
 import com.example.mealsapp.ui.home.search.presenter.SearchPresenterImpl;
 import com.example.mealsapp.ui.home.search.view.SearchFragmentDirections.ActionSearchFragmentToSearchByTypeFragment;
 import com.example.mealsapp.ui.home.search.view.SearchFragmentDirections.ActionSearchFragmentToDetailsFragment;
-import com.example.mealsapp.utils.Helper;
+import com.example.mealsapp.utils.NetworkChangeReceiver;
+import com.example.mealsapp.utils.ProgressDialogHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -49,6 +55,7 @@ public class SearchFragment extends Fragment implements SearchView {
     private SearchMealsAdapter adapter;
     private List<Meal> meals;
     private Disposable disposable;
+    private Toolbar actionBar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,8 +75,9 @@ public class SearchFragment extends Fragment implements SearchView {
         super.onActivityCreated(savedInstanceState);
         BottomNavigationView navBar = getActivity().findViewById(R.id.navigation_bar);
         navBar.setVisibility(View.VISIBLE);
-        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
-        toolbar.setVisibility(View.VISIBLE);
+
+        actionBar = getActivity().findViewById(R.id.toolbar);
+        actionBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -80,32 +88,53 @@ public class SearchFragment extends Fragment implements SearchView {
         content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
         binding.tvView.setText(content);
 
-        Helper.showProgress(getContext());
-        searchPresenter.getCategories();
-        searchPresenter.getCountries();
-        searchPresenter.getIngredients();
         observeViewAllText();
         observeSearchView();
+
+        ProgressDialogHelper.showProgress(getContext());
+        NetworkChangeReceiver.getIsConnected().observe(getViewLifecycleOwner(), isConnected -> {
+            handleNoConnection(isConnected);
+        });
+    }
+
+    private void handleNoConnection(boolean isVisible) {
+        if (isVisible) {
+            binding.group.setVisibility(View.VISIBLE);
+            binding.etSearch.setVisibility(View.VISIBLE);
+            binding.ivNoInternet.setVisibility(View.GONE);
+            searchPresenter.getCategories();
+            searchPresenter.getCountries();
+            searchPresenter.getIngredients();
+        } else {
+            ProgressDialogHelper.hideProgress(getContext());
+            binding.tvSearch.setVisibility(View.GONE);
+            binding.group.setVisibility(View.GONE);
+            binding.rvMeals.setVisibility(View.GONE);
+            binding.etSearch.setVisibility(View.GONE);
+            binding.ivNoInternet.setVisibility(View.VISIBLE);
+        }
     }
 
     private void observeSearchView() {
         disposable = Observable.create(new ObservableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
-                binding.etSearch.setOnQueryTextListener(new android.widget.SearchView.OnQueryTextListener() {
                     @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        return false;
-                    }
+                    public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
+                        binding.etSearch.setOnQueryTextListener(new android.widget.SearchView.OnQueryTextListener() {
+                            @Override
+                            public boolean onQueryTextSubmit(String query) {
+                                return false;
+                            }
 
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        emitter.onNext(newText);
-                        return false;
+                            @Override
+                            public boolean onQueryTextChange(String newText) {
+                                emitter.onNext(newText);
+                                return false;
+                            }
+                        });
                     }
-                });
-            }
-        }).subscribe(o -> searchPresenter.searchByName(o.toString()));
+                }).debounce(1, TimeUnit.SECONDS)
+                .distinctUntilChanged()
+                .subscribe(o -> searchPresenter.searchByName(o.toString()));
     }
 
     private void observeViewAllText() {
@@ -141,19 +170,43 @@ public class SearchFragment extends Fragment implements SearchView {
 
             @Override
             public void OnFavouriteClick(Meal meal) {
-                if (meal.isFavorite()) {
-                    meal.setFavorite(false);
-                    Log.i(TAG, "onClick: remove from favorite");
-                    searchPresenter.deleteMeal(meal);
+                if (searchPresenter.getIsLoggedInFlag()){
+                    if (meal.isFavorite()) {
+                        meal.setFavorite(false);
+                        Log.i(TAG, "onClick: remove from favorite");
+                        searchPresenter.deleteMeal(meal);
+                    } else {
+                        meal.setFavorite(true);
+                        Log.i(TAG, "onClick: add to favorite");
+                        searchPresenter.addFavorite(meal);
+                    }
                 } else {
-                    meal.setFavorite(true);
-                    Log.i(TAG, "onClick: add to favorite");
-                    searchPresenter.addFavorite(meal);
+                    showAlertDialog();
                 }
             }
         });
         adapter.submitList(meals);
         binding.rvMeals.setAdapter(adapter);
+    }
+
+    private void showAlertDialog() {
+        new AlertDialog.Builder(requireContext()).setTitle("Sign In Required")
+                .setMessage("You must sign in to access this feature.")
+                .setIcon(R.drawable.login)
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent = new Intent(requireContext(), HomeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getActivity().startActivity(intent);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                }).create()
+                .show();
     }
 
     @Override
@@ -178,14 +231,14 @@ public class SearchFragment extends Fragment implements SearchView {
 
     @Override
     public void showIngredients(List<Ingredient> ingredients) {
-        Helper.hideProgress(getContext());
+        ProgressDialogHelper.hideProgress(getContext());
         binding.group.setVisibility(View.VISIBLE);
         binding.rvMeals.setVisibility(View.GONE);
         Log.i(TAG, "showIngredients: " + ingredients.size());
         binding.rvIngredients.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         binding.rvIngredients.setLayoutManager(layoutManager);
-        IngredientsAdapter adapter = new IngredientsAdapter(new IngredientsAdapter.OnIngredientClickListener() {
+        IngredientsAdapter adapter = new IngredientsAdapter(getContext(), new IngredientsAdapter.OnIngredientClickListener() {
             @Override
             public void onIngredientClick(Ingredient ingredient) {
                 Log.i(TAG, "showIngredients: item clicked");
@@ -221,7 +274,7 @@ public class SearchFragment extends Fragment implements SearchView {
 
     @Override
     public void showError(Throwable throwable) {
-        Helper.hideProgress(getContext());
+        ProgressDialogHelper.hideProgress(getContext());
         Toast.makeText(binding.getRoot().getContext(),
                 "Error getting meals",
                 Toast.LENGTH_SHORT).show();

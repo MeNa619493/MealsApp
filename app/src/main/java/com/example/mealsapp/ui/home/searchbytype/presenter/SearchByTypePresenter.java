@@ -9,5 +9,6 @@ public interface SearchByTypePresenter {
     void searchMealByName(String name);
     void addFavorite(Meal meal);
     void deleteMeal(Meal meal);
+    boolean getIsLoggedInFlag();
     void onDestroy();
 }
