@@ -8,10 +8,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,8 +43,9 @@ public class HomeFragment extends Fragment implements HomeView{
     private HomePresenter homePresenter;
     private MealsAdapter adapter;
     private List<Meal> meals;
-    private boolean isActionBarVisible = true;
     private Toolbar actionBar;
+    int previousScrollPosition = 0;
+    boolean isScrollingUp = true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,26 +106,23 @@ public class HomeFragment extends Fragment implements HomeView{
     }
 
     private void hideToolbarWhenScrolling() {
-        binding.scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+        binding.scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
-            public void onScrollChanged() {
-                int scrollY = binding.scrollView.getScrollY();
-
-                if (scrollY > 0 && isActionBarVisible) {
-                    // Hide the action bar
-                    if (actionBar != null) {
-                        actionBar.setVisibility(View.GONE);
-                    }
-                    isActionBarVisible = false;
-                } else if (scrollY == 0 && !isActionBarVisible) {
-                    // Show the action bar
-                    if (actionBar != null) {
-                        actionBar.setVisibility(View.VISIBLE);
-                    }
-                    isActionBarVisible = true;
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > previousScrollPosition && isScrollingUp) {
+                    // Scrolling downwards, hide the toolbar
+                    actionBar.setVisibility(View.GONE);
+                    isScrollingUp = false;
+                } else if (scrollY < previousScrollPosition && !isScrollingUp) {
+                    // Scrolling upwards, show the toolbar
+                    actionBar.setVisibility(View.VISIBLE);
+                    isScrollingUp = true;
                 }
+
+                previousScrollPosition = scrollY;
             }
         });
+
     }
 
     @Override

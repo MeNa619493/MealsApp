@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -57,6 +58,8 @@ public class SearchFragment extends Fragment implements SearchView {
     private List<Meal> meals;
     private Disposable disposable;
     private Toolbar actionBar;
+    int previousScrollPosition = 0;
+    boolean isScrollingUp = true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,6 +94,7 @@ public class SearchFragment extends Fragment implements SearchView {
 
         observeViewAllText();
         observeSearchView();
+        hideToolbarWhenScrolling();
 
         ProgressDialogHelper.showProgress(getContext());
         NetworkChangeReceiver.getIsConnected().observe(getViewLifecycleOwner(), isConnected -> {
@@ -114,6 +118,26 @@ public class SearchFragment extends Fragment implements SearchView {
             binding.etSearch.setVisibility(View.GONE);
             binding.ivNoInternet.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void hideToolbarWhenScrolling() {
+        binding.scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > previousScrollPosition && isScrollingUp) {
+                    // Scrolling downwards, hide the toolbar
+                    actionBar.setVisibility(View.GONE);
+                    isScrollingUp = false;
+                } else if (scrollY < previousScrollPosition && !isScrollingUp) {
+                    // Scrolling upwards, show the toolbar
+                    actionBar.setVisibility(View.VISIBLE);
+                    isScrollingUp = true;
+                }
+
+                previousScrollPosition = scrollY;
+            }
+        });
+
     }
 
     private void observeSearchView() {
@@ -155,7 +179,6 @@ public class SearchFragment extends Fragment implements SearchView {
         binding.rvMeals.setVisibility(View.VISIBLE);
         Log.i(TAG, "showSearchResultSuccess: " + meals.size());
         this.meals = meals;
-        ViewCompat.setNestedScrollingEnabled(binding.rvMeals, false);
         binding.rvMeals.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         binding.rvMeals.setLayoutManager(layoutManager);
