@@ -14,7 +14,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class CalendarPresenterImpl implements CalendarPresenter{
+public class CalendarPresenterImpl implements CalendarPresenter {
     private CalendarView view;
     private Repo repo;
     private List<PlannedMeal> meals;
@@ -27,7 +27,8 @@ public class CalendarPresenterImpl implements CalendarPresenter{
 
     public void getAllPlannedMeals(String date) {
         if (meals == null) {
-            repo.getAllPlannedMeals().subscribeOn(Schedulers.io())
+            repo.getAllPlannedMeals()
+                    .subscribeOn(Schedulers.io())
                     .subscribe(new SingleObserver<List<PlannedMeal>>() {
                         @Override
                         public void onSubscribe(Disposable d) {
@@ -76,7 +77,8 @@ public class CalendarPresenterImpl implements CalendarPresenter{
 
     @Override
     public void deleteMeal(PlannedMeal meal) {
-        repo.deletePlannedMeal(meal).subscribeOn(Schedulers.io())
+        repo.deletePlannedMeal(meal)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override

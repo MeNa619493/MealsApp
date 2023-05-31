@@ -13,7 +13,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class FavouritesPresenterImpl implements FavouritesPresenter{
+public class FavouritesPresenterImpl implements FavouritesPresenter {
     private FavouritesView view;
     private Repo repo;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -25,7 +25,9 @@ public class FavouritesPresenterImpl implements FavouritesPresenter{
 
     @Override
     public void getFavouriteMeals() {
-        repo.getFavouriteMeals().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.getFavouriteMeals()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<Meal>>() {
 
                     @Override
@@ -47,7 +49,9 @@ public class FavouritesPresenterImpl implements FavouritesPresenter{
 
     @Override
     public void deleteMeal(Meal meal) {
-        repo.deleteFavorite(meal).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.deleteFavorite(meal)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -68,7 +72,7 @@ public class FavouritesPresenterImpl implements FavouritesPresenter{
 
     @Override
     public void onDestroy() {
-        if(!compositeDisposable.isDisposed()){
+        if (!compositeDisposable.isDisposed()) {
             compositeDisposable.dispose();
         }
     }

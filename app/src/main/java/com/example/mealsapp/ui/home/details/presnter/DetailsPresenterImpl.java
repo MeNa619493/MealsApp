@@ -47,7 +47,9 @@ public class DetailsPresenterImpl implements DetailsPresenter {
 
     @Override
     public void addFavorite(Meal meal) {
-        repo.addFavorite(meal).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.addFavorite(meal)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -68,7 +70,9 @@ public class DetailsPresenterImpl implements DetailsPresenter {
 
     @Override
     public void deleteMeal(Meal meal) {
-        repo.deleteFavorite(meal).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.deleteFavorite(meal)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -89,7 +93,9 @@ public class DetailsPresenterImpl implements DetailsPresenter {
 
     @Override
     public void addPlannedMeal(PlannedMeal plannedMeal) {
-        repo.insertPlannedMeal(plannedMeal).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.insertPlannedMeal(plannedMeal)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {

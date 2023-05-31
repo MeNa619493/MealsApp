@@ -57,22 +57,24 @@ public class SearchPresenterImpl implements SearchPresenter {
                     }
             ).subscribeOn(Schedulers.io());
 
-            combinedDataSingle.observeOn(AndroidSchedulers.mainThread()).subscribe(new SingleObserver<List<Meal>>() {
-                @Override
-                public void onSubscribe(Disposable d) {
-                    compositeDisposable.add(d);
-                }
+            combinedDataSingle
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new SingleObserver<List<Meal>>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            compositeDisposable.add(d);
+                        }
 
-                @Override
-                public void onSuccess(List<Meal> meals) {
-                    view.showSearchResultSuccess(meals);
-                }
+                        @Override
+                        public void onSuccess(List<Meal> meals) {
+                            view.showSearchResultSuccess(meals);
+                        }
 
-                @Override
-                public void onError(Throwable e) {
-                    view.showSearchResultError(e);
-                }
-            });
+                        @Override
+                        public void onError(Throwable e) {
+                            view.showSearchResultError(e);
+                        }
+                    });
         } else {
             getCategories();
             getCountries();
@@ -82,7 +84,9 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void getCategories() {
-        repo.getCategories().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.getCategories()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<CategoryResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -104,7 +108,9 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void getCountries() {
-        repo.getCountries().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.getCountries()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<CountryResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -126,7 +132,9 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void getIngredients() {
-        repo.getIngredients().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.getIngredients()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<IngredientResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -148,7 +156,9 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void addFavorite(Meal meal) {
-        repo.addFavorite(meal).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.addFavorite(meal)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -169,7 +179,9 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void deleteMeal(Meal meal) {
-        repo.deleteFavorite(meal).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.deleteFavorite(meal)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {

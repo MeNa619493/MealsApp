@@ -4,7 +4,9 @@ import com.example.mealsapp.Repo.Repo;
 import com.example.mealsapp.model.pojo.ingredient.Ingredient;
 import com.example.mealsapp.model.pojo.ingredient.IngredientResponse;
 import com.example.mealsapp.ui.home.searchbyingredients.view.SearchByIngredientsView;
+
 import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -54,7 +56,9 @@ public class SearchByIngredientsPresenterImpl implements SearchByIngredientsPres
 
     @Override
     public void getIngredients() {
-        repo.getIngredients().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.getIngredients()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<IngredientResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
