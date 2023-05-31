@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,16 +44,16 @@ public class SplashFragment extends Fragment implements SplashView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.lottieView.addAnimatorListener(new AnimatorListenerAdapter() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void run() {
                 if (splashPresenter.getIsLoggedInFlag()){
                     splashPresenter.getUserDetails(splashPresenter.getUserID());
                 } else {
                     Navigation.findNavController(view).navigate(SplashFragmentDirections.actionSplashFragmentToChooseFragment());
                 }
             }
-        });
+        }, 3000);
     }
 
     @Override

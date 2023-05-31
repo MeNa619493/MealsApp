@@ -126,14 +126,18 @@ public class HomeFragment extends Fragment implements HomeView{
     }
 
     @Override
-    public void showMeal(MealResponse mealResponse) {
-        Meal meal = mealResponse.getMeals().get(0);
+    public void showMeal(Meal meal) {
         binding.tvMealName.setText(meal.getStrMeal());
         binding.tvCategory.setText(meal.getStrCategory());
         Glide.with(binding.getRoot())
                 .load(meal.getStrMealThumb())
                 .placeholder(R.drawable.placeholder)
                 .into(binding.ivMeal);
+        if (meal.isFavorite()) {
+            binding.ivSaveMeal.setImageDrawable(requireContext().getResources().getDrawable(R.drawable.bookmark_filled));
+        } else {
+            binding.ivSaveMeal.setImageDrawable(requireContext().getResources().getDrawable(R.drawable.bookmark));
+        }
         observeSingleCardAction(meal);
     }
 

@@ -6,7 +6,7 @@ import com.example.mealsapp.model.pojo.meal.MealResponse;
 import java.util.List;
 
 public interface HomeView {
-    void showMeal(MealResponse mealResponse);
+    void showMeal(Meal meal);
     void showSuggestionMeals(List<Meal> meals);
     void showError(Throwable throwable);
     void mealAddedToFavoriteSuccessfully(Meal meal);

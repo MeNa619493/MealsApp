@@ -70,6 +70,28 @@
             android:background="@drawable/ic_close"  />
 
         <View
+            android:id="@+id/view2"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/save_icon_background"
+            android:backgroundTint="#30000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_share_meal"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:backgroundTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/view2"
+            app:layout_constraintEnd_toEndOf="@+id/view2"
+            app:layout_constraintStart_toStartOf="@+id/view2"
+            app:layout_constraintTop_toTopOf="@+id/view2"
+            android:background="@drawable/ic_calendar"  />
+
+        <View
             android:id="@+id/view1"
             android:layout_width="32dp"
             android:layout_height="32dp"

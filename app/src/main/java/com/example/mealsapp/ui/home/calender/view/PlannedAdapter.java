@@ -52,7 +52,9 @@ public class PlannedAdapter extends ListAdapter<PlannedMeal, PlannedAdapter.View
     public interface OnMealClickListener {
         void onMealClick(Meal meal);
 
-        void OnDeleteClick(PlannedMeal plannedMeal);
+        void onDeleteClick(PlannedMeal plannedMeal);
+
+        void onShareMealClick(PlannedMeal plannedMeal);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -81,7 +83,14 @@ public class PlannedAdapter extends ListAdapter<PlannedMeal, PlannedAdapter.View
             binding.ivDeleteMeal.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    clickListener.OnDeleteClick(plannedMeal);
+                    clickListener.onDeleteClick(plannedMeal);
+                }
+            });
+
+            binding.ivShareMeal.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickListener.onShareMealClick(plannedMeal);
                 }
             });
         }

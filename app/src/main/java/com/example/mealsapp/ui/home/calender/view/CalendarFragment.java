@@ -2,6 +2,7 @@ package com.example.mealsapp.ui.home.calender.view;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -15,6 +16,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -149,9 +151,23 @@ public class CalendarFragment extends Fragment implements CalendarView{
                 }
 
                 @Override
-                public void OnDeleteClick(PlannedMeal plannedMeal) {
+                public void onDeleteClick(PlannedMeal plannedMeal) {
                     Log.i(TAG, "onClick: remove from Planned meals");
                     calendarPresenter.deleteMeal(plannedMeal);
+                }
+
+                @Override
+                public void onShareMealClick(PlannedMeal plannedMeal) {
+                    Intent intent = new Intent(Intent.ACTION_INSERT);
+                    intent.setData(CalendarContract.Events.CONTENT_URI);
+                    intent.putExtra(CalendarContract.Events.TITLE , plannedMeal.getMeal().getStrMeal());
+                    intent.putExtra(CalendarContract.Events.DESCRIPTION, "Enjoy a " + plannedMeal.getMeal().getStrMeal());
+                    intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, System.currentTimeMillis());
+                    if(intent.resolveActivity(getContext().getPackageManager()) != null){
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(getContext(), "Please download calender app first!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
             adapter.submitList(meals);

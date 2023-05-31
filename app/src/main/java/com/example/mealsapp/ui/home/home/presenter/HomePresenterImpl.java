@@ -20,24 +20,44 @@ public class HomePresenterImpl implements HomePresenter {
     private HomeView view;
     private Repo repo;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    Single<List<Meal>> roomDataSingle;
 
     public HomePresenterImpl(HomeView view, Repo repo) {
         this.view = view;
         this.repo = repo;
+        roomDataSingle = repo.getFavouriteMeals().subscribeOn(Schedulers.io());
     }
 
     @Override
     public void getRandomMeal() {
-        repo.getRandomMeal().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<MealResponse>() {
+        Single<MealResponse> apiDataSingle = repo.getRandomMeal().subscribeOn(Schedulers.io());
+
+        Single<Meal> combinedDataSingle = Single.zip(apiDataSingle, roomDataSingle,
+                (apiDataList, roomDataList) -> {
+                    Meal apiMeal = apiDataList.getMeals().get(0);
+
+                    // Compare and find similar objects between the two lists
+                    for (Meal roomData : roomDataList) {
+                        if (apiMeal.getIdMeal().equals(roomData.getIdMeal())) { // Replace with your similarity check logic
+                            apiMeal.setFavorite(true); // Change the flag in the similar object
+                        }
+                    }
+
+                    return apiMeal; // Return the modified API data list
+                }
+        ).subscribeOn(Schedulers.io());
+
+        combinedDataSingle
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Meal>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         compositeDisposable.add(d);
                     }
 
                     @Override
-                    public void onSuccess(MealResponse mealResponse) {
-                        view.showMeal(mealResponse);
+                    public void onSuccess(Meal meal) {
+                        view.showMeal(meal);
                     }
 
                     @Override
@@ -53,7 +73,6 @@ public class HomePresenterImpl implements HomePresenter {
         char c = (char) (r.nextInt(26) + 'A');
 
         Single<MealResponse> apiDataSingle = repo.getSuggestionMeals(c).subscribeOn(Schedulers.io());
-        Single<List<Meal>> roomDataSingle = repo.getFavouriteMeals().subscribeOn(Schedulers.io());
 
         Single<List<Meal>> combinedDataSingle = Single.zip(apiDataSingle, roomDataSingle,
                 (apiDataList, roomDataList) -> {
@@ -72,27 +91,31 @@ public class HomePresenterImpl implements HomePresenter {
                 }
         ).subscribeOn(Schedulers.io());
 
-        combinedDataSingle.observeOn(AndroidSchedulers.mainThread()).subscribe(new SingleObserver<List<Meal>>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                compositeDisposable.add(d);
-            }
+        combinedDataSingle
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<List<Meal>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        compositeDisposable.add(d);
+                    }
 
-            @Override
-            public void onSuccess(List<Meal> meals) {
-                view.showSuggestionMeals(meals);
-            }
+                    @Override
+                    public void onSuccess(List<Meal> meals) {
+                        view.showSuggestionMeals(meals);
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                view.showError(e);
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        view.showError(e);
+                    }
+                });
     }
 
     @Override
     public void addFavorite(Meal meal) {
-        repo.addFavorite(meal).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.addFavorite(meal)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -113,7 +136,9 @@ public class HomePresenterImpl implements HomePresenter {
 
     @Override
     public void deleteMeal(Meal meal) {
-        repo.deleteFavorite(meal).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        repo.deleteFavorite(meal)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -138,7 +163,7 @@ public class HomePresenterImpl implements HomePresenter {
 
     @Override
     public void onDestroy() {
-        if(!compositeDisposable.isDisposed()){
+        if (!compositeDisposable.isDisposed()) {
             compositeDisposable.dispose();
         }
     }
