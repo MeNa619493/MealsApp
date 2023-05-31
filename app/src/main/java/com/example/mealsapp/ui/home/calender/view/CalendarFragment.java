@@ -157,9 +157,13 @@ public class CalendarFragment extends Fragment implements CalendarView{
             adapter.submitList(meals);
             binding.rvPlannedMeals.setAdapter(adapter);
         } else {
-            binding.rvPlannedMeals.setVisibility(View.GONE);
-            binding.ivNoDataFound.setVisibility(View.VISIBLE);
+            showNoDataView();
         }
+    }
+
+    private void showNoDataView() {
+        binding.rvPlannedMeals.setVisibility(View.GONE);
+        binding.ivNoDataFound.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -173,8 +177,11 @@ public class CalendarFragment extends Fragment implements CalendarView{
     public void mealDeletedSuccessfully(PlannedMeal meal) {
         int pos = meals.indexOf(meal);
         meals.remove(meal);
-        Log.i(TAG, "showPlannedMeals: meal deleted " + meals.size());
         adapter.notifyItemRemoved(pos);
+        Log.i(TAG, "showPlannedMeals: meal deleted " + meals.size());
+        if (meals.size() <= 0){
+            showNoDataView();
+        }
         Toast.makeText(getContext(),
                 "meal removed successfully",
                 Toast.LENGTH_SHORT).show();

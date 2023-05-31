@@ -52,6 +52,8 @@ public class RegisterPresenterImpl implements RegisterPresenter {
 
     @Override
     public void onDestroy() {
-        disposable.dispose();
+        if (disposable != null) {
+            disposable.dispose();
+        }
     }
 }

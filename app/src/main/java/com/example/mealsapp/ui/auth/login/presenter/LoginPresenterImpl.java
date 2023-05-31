@@ -47,7 +47,12 @@ public class LoginPresenterImpl implements LoginPresenter {
 
     @Override
     public void onDestroy() {
-        disposable1.dispose();
-        disposable2.dispose();
+        if (disposable1 != null) {
+            disposable1.dispose();
+        }
+
+        if ( disposable2 != null){
+            disposable2.dispose();
+        }
     }
 }

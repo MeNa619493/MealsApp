@@ -31,6 +31,7 @@ import com.example.mealsapp.model.pojo.category.Category;
 import com.example.mealsapp.model.pojo.country.Country;
 import com.example.mealsapp.model.pojo.ingredient.Ingredient;
 import com.example.mealsapp.model.pojo.meal.Meal;
+import com.example.mealsapp.ui.auth.MainActivity;
 import com.example.mealsapp.ui.home.HomeActivity;
 import com.example.mealsapp.ui.home.search.presenter.SearchPresenter;
 import com.example.mealsapp.ui.home.search.presenter.SearchPresenterImpl;
@@ -196,7 +197,7 @@ public class SearchFragment extends Fragment implements SearchView {
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent(requireContext(), HomeActivity.class);
+                        Intent intent = new Intent(requireContext(), MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         getActivity().startActivity(intent);
                     }

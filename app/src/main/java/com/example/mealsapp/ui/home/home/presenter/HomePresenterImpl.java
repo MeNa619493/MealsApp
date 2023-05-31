@@ -52,7 +52,7 @@ public class HomePresenterImpl implements HomePresenter {
         Random r = new Random();
         char c = (char) (r.nextInt(26) + 'A');
 
-        Single<MealResponse> apiDataSingle = repo.getSuggestionMeals('T').subscribeOn(Schedulers.io());
+        Single<MealResponse> apiDataSingle = repo.getSuggestionMeals(c).subscribeOn(Schedulers.io());
         Single<List<Meal>> roomDataSingle = repo.getFavouriteMeals().subscribeOn(Schedulers.io());
 
         Single<List<Meal>> combinedDataSingle = Single.zip(apiDataSingle, roomDataSingle,

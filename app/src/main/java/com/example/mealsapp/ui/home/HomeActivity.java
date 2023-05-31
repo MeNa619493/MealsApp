@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -31,7 +32,8 @@ public class HomeActivity extends AppCompatActivity {
     private Repo repo;
     private FirebaseFirestore mFireStore;
     private static final String TAG = "HomeActivity";
-    private Disposable disposable;
+    private Disposable disposable1;
+    private Disposable disposable2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,24 +53,25 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (repo.getIsLoggedInFlag()) {
                     AuthHelper.currentUser.setId(repo.getUserID());
-                     disposable = repo.getAllPlannedMeals().observeOn(Schedulers.io())
-                            .flatMap(plannedMeals -> {
+                     disposable1 = repo.getAllPlannedMeals()
+                            .flatMapCompletable(plannedMeals -> {
                                 AuthHelper.currentUser.setPlanned(plannedMeals);
-                                repo.deleteAllPlannedMeal();
-                                return repo.getFavouriteMeals();
-                            })
-                            .subscribeOn(Schedulers.io())
-                            .flatMapCompletable(meals -> {
-                                AuthHelper.currentUser.setFavorites(meals);
-                                return repo.deleteAllMeals();
+                                return repo.deleteAllPlannedMeal();
                             }).subscribeOn(Schedulers.io())
                              .subscribe(() -> {
-                                 updateUserInCloud(AuthHelper.currentUser);
+                                 disposable2 = repo.getFavouriteMeals()
+                                         .flatMapCompletable(meals -> {
+                                             AuthHelper.currentUser.setFavorites(meals);
+                                             return repo.deleteAllMeals();
+                                         }).subscribeOn(Schedulers.io())
+                                         .observeOn(AndroidSchedulers.mainThread())
+                                         .subscribe(() -> {
+                                             updateUserInCloud(AuthHelper.currentUser);
+                                         });
                              });
                 }
             }
         });
-
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(binding.navigationBar, navController);
@@ -97,11 +100,14 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        disposable.dispose();
+        if (disposable1 != null) {
+            disposable1.dispose();
+        }
+        if (disposable2 != null) {
+            disposable2.dispose();
+        }
     }
 }

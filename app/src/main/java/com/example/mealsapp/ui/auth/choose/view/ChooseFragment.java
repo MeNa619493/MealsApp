@@ -1,10 +1,12 @@
 package com.example.mealsapp.ui.auth.choose.view;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -20,6 +22,7 @@ import com.example.mealsapp.databinding.FragmentChooseBinding;
 import com.example.mealsapp.model.pojo.user.User;
 import com.example.mealsapp.ui.auth.choose.presenter.ChoosePresenter;
 import com.example.mealsapp.ui.auth.choose.presenter.ChoosePresenterImpl;
+import com.example.mealsapp.ui.home.HomeActivity;
 import com.example.mealsapp.utils.AuthHelper;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -83,10 +86,28 @@ public class ChooseFragment extends Fragment implements ChooseView {
         binding.btnSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                choosePresenter.putIsLoggedInFlag(false);
-                AuthHelper.navigateToHomeActivity(getContext());
+                showAlertDialog();
             }
         });
+    }
+
+    private void showAlertDialog() {
+        new AlertDialog.Builder(requireContext()).setTitle("Wait! Are you sure?")
+                .setMessage("You'll miss out on personalized content and saving our delicious recipes.")
+                .setIcon(R.drawable.login)
+                .setCancelable(false)
+                .setPositiveButton("YES, I'M SURE", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        choosePresenter.putIsLoggedInFlag(false);
+                        AuthHelper.navigateToHomeActivity(getContext());
+                    }
+                })
+                .setNegativeButton("No, GO BACK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                }).create()
+                .show();
     }
 
     private void observeGoogleButton() {
@@ -154,6 +175,7 @@ public class ChooseFragment extends Fragment implements ChooseView {
 
     @Override
     public void showError(String message) {
+        Log.d(TAG, "showError: " + message);
         AuthHelper.showErrorToast(requireContext(), message);
     }
 

@@ -58,7 +58,12 @@ public class ChoosePresenterImpl implements ChoosePresenter {
 
     @Override
     public void onDestroy() {
-        disposable1.dispose();
-        disposable2.dispose();
+        if (disposable1 != null) {
+            disposable1.dispose();
+        }
+
+        if ( disposable2 != null){
+            disposable2.dispose();
+        }
     }
 }

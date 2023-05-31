@@ -141,9 +141,13 @@ public class FavouritesFragment extends Fragment implements FavouritesView {
             adapter.submitList(meals);
             binding.rvFavMeals.setAdapter(adapter);
         } else {
-            binding.rvFavMeals.setVisibility(View.GONE);
-            binding.ivNoDataFound.setVisibility(View.VISIBLE);
+            showNoDataView();
         }
+    }
+
+    private void showNoDataView() {
+        binding.rvFavMeals.setVisibility(View.GONE);
+        binding.ivNoDataFound.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -158,8 +162,11 @@ public class FavouritesFragment extends Fragment implements FavouritesView {
     public void mealDeletedSuccessfully(Meal meal) {
         int pos = meals.indexOf(meal);
         meals.remove(meal);
-        Log.i(TAG, "showFavouriteMeals: meal deleted " + meals.size());
         adapter.notifyItemRemoved(pos);
+        Log.i(TAG, "showFavouriteMeals: meal deleted " + meals.size());
+        if (meals.size() <= 0){
+            showNoDataView();
+        }
         Toast.makeText(getContext(),
                 "meal removed successfully",
                 Toast.LENGTH_SHORT).show();

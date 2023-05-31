@@ -29,16 +29,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <ImageView
+    <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/iv_no_data_found"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="centerInside"
-        android:visibility="visible"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        app:lottie_autoPlay="true"
+        android:visibility="gone"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/no_data"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_more"
-        android:src="@drawable/no_file" />
+        app:layout_constraintTop_toBottomOf="@id/tv_more" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

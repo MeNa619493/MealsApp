@@ -30,6 +30,7 @@ import com.example.mealsapp.R;
 import com.example.mealsapp.databinding.FragmentDetailsBinding;
 import com.example.mealsapp.model.pojo.meal.Meal;
 import com.example.mealsapp.model.pojo.meal.PlannedMeal;
+import com.example.mealsapp.ui.auth.MainActivity;
 import com.example.mealsapp.ui.home.HomeActivity;
 import com.example.mealsapp.ui.home.details.presnter.DetailsPresenter;
 import com.example.mealsapp.ui.home.details.presnter.DetailsPresenterImpl;
@@ -212,7 +213,7 @@ public class DetailsFragment extends Fragment implements DetailsView {
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent(requireContext(), HomeActivity.class);
+                        Intent intent = new Intent(requireContext(), MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         getActivity().startActivity(intent);
                     }
