@@ -123,6 +123,7 @@ public class SearchByIngredientsFragment extends Fragment implements SearchByIng
     @Override
     public void showIngredients(IngredientResponse ingredientResponse) {
         ProgressDialogHelper.hideProgress(getContext());
+
         Log.i(TAG, "showIngredients: " + ingredientResponse.getMeals().size());
         binding.rvIngredients.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
@@ -143,7 +144,14 @@ public class SearchByIngredientsFragment extends Fragment implements SearchByIng
 
     @Override
     public void showIngredientsSearchResult(List<Ingredient> ingredients) {
-        adapter.submitList(ingredients);
+        if (ingredients.size() > 0) {
+            binding.rvIngredients.setVisibility(View.VISIBLE);
+            binding.ivNoDataFound.setVisibility(View.GONE);
+            adapter.submitList(ingredients);
+        } else {
+            binding.rvIngredients.setVisibility(View.GONE);
+            binding.ivNoDataFound.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

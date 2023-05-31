@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface SearchView {
     void showSearchResultSuccess(List<Meal> meals);
+    void showSearchResultError(Throwable throwable);
     void showCategories(List<Category> categories);
     void showIngredients(List<Ingredient> ingredients);
     void showCountries(List<Country> countries);

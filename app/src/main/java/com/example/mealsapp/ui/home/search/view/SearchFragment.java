@@ -151,6 +151,7 @@ public class SearchFragment extends Fragment implements SearchView {
     @Override
     public void showSearchResultSuccess(List<Meal> meals) {
         binding.group.setVisibility(View.GONE);
+        binding.ivNoDataFound.setVisibility(View.GONE);
         binding.rvMeals.setVisibility(View.VISIBLE);
         Log.i(TAG, "showSearchResultSuccess: " + meals.size());
         this.meals = meals;
@@ -171,7 +172,7 @@ public class SearchFragment extends Fragment implements SearchView {
 
             @Override
             public void OnFavouriteClick(Meal meal) {
-                if (searchPresenter.getIsLoggedInFlag()){
+                if (searchPresenter.getIsLoggedInFlag()) {
                     if (meal.isFavorite()) {
                         meal.setFavorite(false);
                         Log.i(TAG, "onClick: remove from favorite");
@@ -188,6 +189,14 @@ public class SearchFragment extends Fragment implements SearchView {
         });
         adapter.submitList(meals);
         binding.rvMeals.setAdapter(adapter);
+    }
+
+    @Override
+    public void showSearchResultError(Throwable throwable) {
+        Log.i(TAG, "showSearchResultError: " + throwable.getMessage());
+        binding.group.setVisibility(View.GONE);
+        binding.rvMeals.setVisibility(View.GONE);
+        binding.ivNoDataFound.setVisibility(View.VISIBLE);
     }
 
     private void showAlertDialog() {

@@ -139,41 +139,48 @@ public class SearchByTypeFragment extends Fragment implements SearchByTypeView {
     @Override
     public void showMeals(List<Meal> meals) {
         ProgressDialogHelper.hideProgress(getContext());
-        this.meals = meals;
-        Log.i(TAG, "showMeals: " + meals.size());
-        binding.rvMeals.setHasFixedSize(true);
-        LinearLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
-        binding.rvMeals.setLayoutManager(layoutManager);
-        SimpleItemAnimator itemAnimator = (SimpleItemAnimator) binding.rvMeals.getItemAnimator();
-        itemAnimator.setSupportsChangeAnimations(false);
-        adapter = new SearchByTypeAdapter(getContext(), new SearchByTypeAdapter.OnMealClickListener() {
-            @Override
-            public void onMealClick(Meal meal) {
-                Log.i(TAG, "onClick: show Favourite details");
-                ActionSearchByTypeFragmentToDetailsFragment action =
-                        SearchByTypeFragmentDirections.actionSearchByTypeFragmentToDetailsFragment(meal);
-                Navigation.findNavController(binding.getRoot()).navigate(action);
-            }
-
-            @Override
-            public void OnFavouriteClick(Meal meal) {
-                if (searchByTypePresenter.getIsLoggedInFlag()) {
-                    if (meal.isFavorite()) {
-                        meal.setFavorite(false);
-                        Log.i(TAG, "onClick: remove from favorite");
-                        searchByTypePresenter.deleteMeal(meal);
-                    } else {
-                        meal.setFavorite(true);
-                        Log.i(TAG, "onClick: add to favorite");
-                        searchByTypePresenter.addFavorite(meal);
-                    }
-                } else {
-                    showAlertDialog();
+        if (meals.size() > 0) {
+            binding.rvMeals.setVisibility(View.VISIBLE);
+            binding.ivNoDataFound.setVisibility(View.GONE);
+            this.meals = meals;
+            Log.i(TAG, "showMeals: " + meals.size());
+            binding.rvMeals.setHasFixedSize(true);
+            LinearLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+            binding.rvMeals.setLayoutManager(layoutManager);
+            SimpleItemAnimator itemAnimator = (SimpleItemAnimator) binding.rvMeals.getItemAnimator();
+            itemAnimator.setSupportsChangeAnimations(false);
+            adapter = new SearchByTypeAdapter(getContext(), new SearchByTypeAdapter.OnMealClickListener() {
+                @Override
+                public void onMealClick(Meal meal) {
+                    Log.i(TAG, "onClick: show Favourite details");
+                    ActionSearchByTypeFragmentToDetailsFragment action =
+                            SearchByTypeFragmentDirections.actionSearchByTypeFragmentToDetailsFragment(meal);
+                    Navigation.findNavController(binding.getRoot()).navigate(action);
                 }
-            }
-        });
-        adapter.submitList(meals);
-        binding.rvMeals.setAdapter(adapter);
+
+                @Override
+                public void OnFavouriteClick(Meal meal) {
+                    if (searchByTypePresenter.getIsLoggedInFlag()) {
+                        if (meal.isFavorite()) {
+                            meal.setFavorite(false);
+                            Log.i(TAG, "onClick: remove from favorite");
+                            searchByTypePresenter.deleteMeal(meal);
+                        } else {
+                            meal.setFavorite(true);
+                            Log.i(TAG, "onClick: add to favorite");
+                            searchByTypePresenter.addFavorite(meal);
+                        }
+                    } else {
+                        showAlertDialog();
+                    }
+                }
+            });
+            adapter.submitList(meals);
+            binding.rvMeals.setAdapter(adapter);
+        } else {
+            binding.rvMeals.setVisibility(View.GONE);
+            binding.ivNoDataFound.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -186,15 +193,6 @@ public class SearchByTypeFragment extends Fragment implements SearchByTypeView {
         ProgressDialogHelper.hideProgress(getContext());
         Toast.makeText(binding.getRoot().getContext(),
                 "Error getting meals",
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void mealAddedToFavoriteSuccessfully(Meal meal) {
-        int pos = meals.indexOf(meal);
-        adapter.notifyItemChanged(pos);
-        Toast.makeText(binding.getRoot().getContext(),
-                "Meal Saved Successfully",
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -216,6 +214,15 @@ public class SearchByTypeFragment extends Fragment implements SearchByTypeView {
                     }
                 }).create()
                 .show();
+    }
+
+    @Override
+    public void mealAddedToFavoriteSuccessfully(Meal meal) {
+        int pos = meals.indexOf(meal);
+        adapter.notifyItemChanged(pos);
+        Toast.makeText(binding.getRoot().getContext(),
+                "Meal Saved Successfully",
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override

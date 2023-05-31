@@ -70,7 +70,7 @@ public class SearchPresenterImpl implements SearchPresenter {
 
                 @Override
                 public void onError(Throwable e) {
-                    view.showError(e);
+                    view.showSearchResultError(e);
                 }
             });
         } else {
