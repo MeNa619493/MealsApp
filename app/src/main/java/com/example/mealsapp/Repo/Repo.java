@@ -26,6 +26,7 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
@@ -190,8 +191,8 @@ public class Repo {
         });
     }
 
-    public Single<User> getUserDetails(String id) {
-        return Single.create(emitter -> {
+    public Maybe<User> getUserDetailsOrUpload(String id) {
+        return Maybe.create(emitter -> {
             mFireStore.collection(AuthHelper.USERS).document(id).get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
@@ -204,7 +205,30 @@ public class Repo {
                                     emitter.onSuccess(loggedInUser);
                                 } else {
                                     Log.d(TAG, "Document does not exist!");
-                                    emitter.onSuccess(null);
+                                    emitter.onComplete();
+                                }
+                            } else {
+                                Log.d(TAG, "Failed with: ", task.getException());
+                                emitter.onError(new Exception("getting user data failed"));
+                            }
+                        }
+                    });
+        });
+    }
+
+
+    public Single<User> getUserDetails(String id) {
+        return Single.create(emitter -> {
+            mFireStore.collection(AuthHelper.USERS).document(id).get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    Log.d(TAG, "Document exist!");
+                                    User loggedInUser = document.toObject(User.class);
+                                    emitter.onSuccess(loggedInUser);
                                 }
                             } else {
                                 Log.d(TAG, "Failed with: ", task.getException());

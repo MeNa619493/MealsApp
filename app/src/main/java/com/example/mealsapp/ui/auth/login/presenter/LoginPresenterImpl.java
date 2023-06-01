@@ -26,19 +26,20 @@ public class LoginPresenterImpl implements LoginPresenter {
         String state = AuthHelper.validateUserInputRegex(user.getEmail(), user.getPassWord());
         if (state.equals(AuthHelper.SUCCESS)) {
 
-            disposable1 = repo.signIn(user).flatMap(id -> {
-                return repo.getUserDetails(id);
-            }).subscribeOn(Schedulers.io()).subscribe(loggedInUser -> {
-                Completable first = repo.savePlannedMealsToDatabase(loggedInUser);
-                Completable second = repo.saveFavoritesToDatabase(loggedInUser);
-                disposable2 = first.andThen(second).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
-                    repo.putIsLoggedInFlag(true);
-                    repo.putUserID(loggedInUser.getId());
-                    loginView.navigateToHome(loggedInUser);
-                });
-            }, throwable -> {
-                loginView.showError(throwable.getMessage());
-            });
+            disposable1 = repo.signIn(user).flatMap(s -> {
+                            return repo.getUserDetails(s);
+                    }).subscribeOn(Schedulers.io())
+                    .subscribe(loggedInUser -> {
+                        Completable first = repo.savePlannedMealsToDatabase(loggedInUser);
+                        Completable second = repo.saveFavoritesToDatabase(loggedInUser);
+                        disposable2 = first.andThen(second).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+                            repo.putIsLoggedInFlag(true);
+                            repo.putUserID(loggedInUser.getId());
+                            loginView.navigateToHome(loggedInUser);
+                        });
+                    }, throwable -> {
+                        loginView.showError(throwable.getMessage());
+                    });
 
         } else {
             loginView.showError(state);
@@ -51,7 +52,7 @@ public class LoginPresenterImpl implements LoginPresenter {
             disposable1.dispose();
         }
 
-        if ( disposable2 != null){
+        if (disposable2 != null) {
             disposable2.dispose();
         }
     }

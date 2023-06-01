@@ -23,7 +23,7 @@ public class ChoosePresenterImpl implements ChoosePresenter {
 
     @Override
     public void checkIfUserExist(User user) {
-        disposable1 = repo.getUserDetails(user.getId())
+        disposable1 = repo.getUserDetailsOrUpload(user.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(loggedInUser -> {
@@ -35,20 +35,20 @@ public class ChoosePresenterImpl implements ChoosePresenter {
                             repo.putUserID(loggedInUser.getId());
                             chooseView.navigateToHome(loggedInUser);
                         });
-                    } else {
-                        disposable2 = repo.addUserToFirebaseCollection(user)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(uploadedUser -> {
-                                    repo.putIsLoggedInFlag(true);
-                                    repo.putUserID(loggedInUser.getId());
-                                    chooseView.navigateToHome(loggedInUser);
-                                }, throwable -> {
-                                    chooseView.showError(throwable.getMessage());
-                                });
                     }
                 }, throwable -> {
                     chooseView.showError(throwable.getMessage());
+                }, () -> {
+                    disposable2 = repo.addUserToFirebaseCollection(user)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(uploadedUser -> {
+                                repo.putIsLoggedInFlag(true);
+                                repo.putUserID(uploadedUser.getId());
+                                chooseView.navigateToHome(uploadedUser);
+                            }, throwable -> {
+                                chooseView.showError(throwable.getMessage());
+                            });
                 });
     }
 
