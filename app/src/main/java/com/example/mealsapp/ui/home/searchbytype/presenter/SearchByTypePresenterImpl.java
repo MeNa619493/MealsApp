@@ -63,10 +63,11 @@ public class SearchByTypePresenterImpl implements SearchByTypePresenter {
 
                     return apiList; // Return the modified API data list
                 }
-        ).subscribeOn(Schedulers.io());
+        );
 
-        combinedDataSingle.
-                observeOn(AndroidSchedulers.mainThread())
+        combinedDataSingle
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<Meal>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -92,7 +93,7 @@ public class SearchByTypePresenterImpl implements SearchByTypePresenter {
             Observable.fromIterable(mealList)
                     .filter(meal -> meal.getStrMeal().toLowerCase().contains(name.toLowerCase()))
                     .toList()
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<List<Meal>>() {
                         @Override

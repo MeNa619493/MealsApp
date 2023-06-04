@@ -19,7 +19,7 @@ public class MealsApplication extends Application {
         SharedPref sharedPref = SharedPrefImpl.getInstance(getApplicationContext());
         LocalDataSource localDataSource = LocalDataSourceImpl.getInstance(getApplicationContext());
         ApiClient apiClient = ApiClient.getInstance();
-        repo = new Repo(localDataSource, apiClient, sharedPref);
+        repo = Repo.getInstance(localDataSource, apiClient, sharedPref);
     }
 
     public Repo getRepo() {

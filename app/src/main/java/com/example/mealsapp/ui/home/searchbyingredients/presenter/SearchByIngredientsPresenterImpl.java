@@ -31,7 +31,7 @@ public class SearchByIngredientsPresenterImpl implements SearchByIngredientsPres
             Observable.fromIterable(ingredients)
                     .filter(ingredient -> ingredient.getStrIngredient().toLowerCase().contains(name.toLowerCase()))
                     .toList()
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<List<Ingredient>>() {
                         @Override

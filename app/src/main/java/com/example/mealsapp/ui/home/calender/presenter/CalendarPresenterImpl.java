@@ -55,7 +55,7 @@ public class CalendarPresenterImpl implements CalendarPresenter {
         Observable.fromIterable(meals)
                 .filter(meal -> meal.getDate().equalsIgnoreCase(date))
                 .toList()
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<PlannedMeal>>() {
                     @Override

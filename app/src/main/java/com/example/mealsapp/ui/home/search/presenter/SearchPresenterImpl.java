@@ -55,9 +55,10 @@ public class SearchPresenterImpl implements SearchPresenter {
 
                         return apiList; // Return the modified API data list
                     }
-            ).subscribeOn(Schedulers.io());
+            );
 
             combinedDataSingle
+                    .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<List<Meal>>() {
                         @Override

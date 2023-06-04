@@ -23,6 +23,11 @@
         <item name="android:background">@drawable/bg_edit_text</item>
     </style>
 
+    <style name="Rounded" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
     <style name="DialogStyle" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
         <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
